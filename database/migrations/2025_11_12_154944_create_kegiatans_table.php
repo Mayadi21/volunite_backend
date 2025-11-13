@@ -21,8 +21,8 @@ return new class extends Migration
             $table->integer('kuota')->nullable(); 
             $table->dateTime('tanggal_mulai')->nullable(); 
             $table->dateTime('tanggal_berakhir')->nullable(); 
-            $table->enum('status', ['scheduled', 'on progress', 'finished', 'cancelled'])
-                  ->default('scheduled'); 
+            $table->enum('status', ['Waiting', 'Rejected', 'scheduled', 'on progress', 'finished', 'cancelled'])
+                  ->default('Waiting');
             $table->timestamps();
         });
     }
