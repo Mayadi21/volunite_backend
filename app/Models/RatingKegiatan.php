@@ -6,22 +6,24 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class DetailUser extends Model
+class RatingKegiatan extends Model
 {
     //
     use HasFactory;
 
-    protected $table = 'detail_user';
+    protected $table = 'rating_kegiatan';
+
     protected $fillable = [
+        'kegiatan_id',
         'user_id',
-        'tanggal_lahir',
-        'jenis_kelamin',
-        'no_telepon',
-        'domisili',
+        'rate'
     ];
 
     public function user(): BelongsTo{
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function kegiatan(): BelongsTo{
+        return $this->belongsTo(Kegiatan::class, 'kegiatan_id');
+    }
 }
