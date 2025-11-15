@@ -61,7 +61,11 @@ class User extends Authenticatable
     }
 
     public function rating(): HasMany{
-        return $this->hasMany(Kegiatan::class, 'user_id');
+        return $this->hasMany(RatingKegiatan::class, 'user_id');
+    }
+
+    public function report(): HasMany{
+        return $this->hasMany(ReportKegiatan::class, 'user_id');
     }
 
     public function pencapaian(): BelongsToMany{

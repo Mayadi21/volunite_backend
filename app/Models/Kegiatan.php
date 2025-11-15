@@ -34,6 +34,10 @@ class Kegiatan extends Model
         return $this->hasMany(RatingKegiatan::class, 'kegiatan_id');
     }
 
+    public function report(): HasMany{
+        return $this->hasMany(ReportKegiatan::class, 'kegiatan_id');
+    }
+
     public function kategori(): BelongsToMany{
         return $this->belongsToMany(Kategori::class, 'kategori_kegiatan', 'kegiatan_id', 'kategori_id')->withTimestamps();
     }

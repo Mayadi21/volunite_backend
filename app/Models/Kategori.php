@@ -25,6 +25,6 @@ class Kategori extends Model
     }
 
     public function kegiatan(): BelongsToMany{
-        return $this->belongsToMany(Kegiatan::class, 'kategori_kegiatan', 'kategori_id', 'kegitan_id');
+        return $this->belongsToMany(Kegiatan::class, 'kategori_kegiatan', 'kategori_id', 'kegitan_id')->withTimestamps();
     }
 }
