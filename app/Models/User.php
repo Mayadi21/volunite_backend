@@ -4,8 +4,11 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
@@ -21,6 +24,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'path_profil',
+        'role',
+
     ];
 
     /**
@@ -45,4 +51,23 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function detailUser(): HasOne{
+        return $this->hasOne(DetailUser::class, 'user_id');
+    }
+
+    public function pendaftaran(): HasMany{
+        return $this->hasMany(Pendaftaran::class, 'user_id');
+    }
+
+    public function rating(): HasMany{
+        return $this->hasMany(Kegiatan::class, 'user_id');
+    }
+
+    public function pencapaian(): BelongsToMany{
+        return $this->belongsToMany(Pencapaian::class, 'pencapaian_user', 'pencapaian_id', 'user_id')
+        ->withTimestamps();
+    }
+
+    
 }
