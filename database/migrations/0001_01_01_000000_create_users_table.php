@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable(); 
             $table->string('password', 255);
             $table->string('path_profil', 255)->nullable(); 
-            $table->enum('role', ['Admin', 'Volunteer', 'Organizer']); 
+            $table->enum('role', ['Admin', 'Volunteer', 'Organizer', 'Banned']); 
             $table->rememberToken(); 
             $table->timestamps();
         });
