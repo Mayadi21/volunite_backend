@@ -21,6 +21,7 @@ return new class extends Migration
             $table->enum('jenis_kelamin', ['Laki-Laki', 'Perempuan', 'Tidak Ingin Memberi Tahu']);
             $table->string('no_telepon', 20)->unique()->nullable();
             $table->string('domisili', 100)->nullable();
+            $table->timestamps();
         });
     }
 
