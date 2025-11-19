@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('pencapaian', function (Blueprint $table) {
             $table->id();
             $table->string('nama', 50)->unique();
-            $table->string('deskripsi', 100)->nullable();
+            $table->string('deskripsi', 255)->nullable();
             $table->string('thumbnail', 255)->nullable();
             $table->foreignId('required_kategori')->nullable()->constrained('kategori'); 
             $table->integer('required_count_kategori')->nullable();
