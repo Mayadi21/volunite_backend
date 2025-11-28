@@ -21,10 +21,10 @@ class Kategori extends Model
     ];
 
     public function pencapaian(): HasMany{
-        return $this->hasMany(Pencapaian::class, 'kategori_id');
+        return $this->hasMany(Pencapaian::class, 'required_kategori');
     }
 
     public function kegiatan(): BelongsToMany{
-        return $this->belongsToMany(Kegiatan::class, 'kategori_kegiatan', 'kategori_id', 'kegitan_id')->withTimestamps();
+        return $this->belongsToMany(Kegiatan::class, 'kategori_kegiatan', 'kategori_id', 'kegiatan_id')->withTimestamps();
     }
 }
