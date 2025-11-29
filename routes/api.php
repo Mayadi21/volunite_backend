@@ -2,7 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\ApiAuthController;
 
 
 
@@ -11,6 +12,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+
+    Route::post('/login', [ApiAuthController::class, 'login']);
+
 
     Route::prefix('volunteer')->group(base_path('routes/api_volunteer.php'));
 
