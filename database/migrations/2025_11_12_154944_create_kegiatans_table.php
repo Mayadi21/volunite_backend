@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('kegiatan', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('judul', 100);
             $table->string('thumbnail', 255)->nullable(); 
             $table->string('deskripsi', 150)->nullable(); 
