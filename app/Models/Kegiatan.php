@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Kegiatan extends Model
 {
@@ -27,6 +28,13 @@ class Kegiatan extends Model
         'tanggal_berakhir',
         'status'
     ];
+
+    protected function thumbnail(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value ? url('storage/' . $value) : null,
+        );
+    }
 
     public function user(): BelongsTo{
         return $this->belongsTo(User::class, 'user_id');
