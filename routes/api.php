@@ -4,6 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\ApiAuthController;
+use App\Http\Controllers\KegiatanController;
+
+Route::get('/kegiatan', [KegiatanController::class, 'index']);
 
 Route::post('/login', [ApiAuthController::class, 'login']); 
 
@@ -20,4 +23,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
   
     Route::prefix('admin')->group(base_path('routes/api_admin.php'));
 
+    
 });
