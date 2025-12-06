@@ -11,4 +11,4 @@ Route::post('/login', [ApiAuthController::class, 'login']);
 
   Route::get('/kegiatan', [KegiatanController::class, 'index']);
   Route::post('/kegiatan/{kegiatanId}/pendaftaran', [PendaftaranController::class, 'store']);
-
+  Route::get('/kegiatan/{kegiatanId}/pendaftaran/status', [PendaftaranController::class, 'status']);
