@@ -23,7 +23,6 @@ class StoreKegiatanRequest extends FormRequest
             'tanggal_berakhir' => 'required|date|after:tanggal_mulai',
             'status'           => 'nullable|in:Waiting,scheduled',
             'thumbnail'        => 'required|image|mimes:jpeg,png,jpg,webp|max:20480', 
-            // 'thumbnail' => 'nullable|file',
             'kategori_ids'     => 'required|array|min:1',
             'kategori_ids.*'   => 'exists:kategori,id',
         ];
