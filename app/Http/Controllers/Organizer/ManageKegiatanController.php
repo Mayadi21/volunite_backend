@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Organizer; 
+namespace App\Http\Controllers\Organizer;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Organizer\StoreKegiatanRequest;
@@ -15,6 +15,7 @@ class ManageKegiatanController extends Controller
     public function index(Request $request)
     {
         $kegiatan = Kegiatan::with('kategori')
+                    ->withCount('pendaftaran') 
                     ->where('user_id', $request->user()->id)
                     ->latest()
                     ->get();
@@ -25,10 +26,9 @@ class ManageKegiatanController extends Controller
         ]);
     }
 
-public function store(StoreKegiatanRequest $request)
+    public function store(StoreKegiatanRequest $request)
     {
         return DB::transaction(function () use ($request) {
-            
             $path = null;
             if ($request->hasFile('thumbnail')) {
                 $path = $request->file('thumbnail')->store('images/Kegiatan', 'public');
@@ -39,6 +39,7 @@ public function store(StoreKegiatanRequest $request)
                 'judul'            => $request->judul,
                 'thumbnail'        => $path,
                 'deskripsi'        => $request->deskripsi,
+                'link_grup'        => $request->link_grup, 
                 'lokasi'           => $request->lokasi,
                 'syarat_ketentuan' => $request->syarat_ketentuan,
                 'kuota'            => $request->kuota,
@@ -47,7 +48,9 @@ public function store(StoreKegiatanRequest $request)
                 'status'           => 'Waiting',
             ]);
 
-            $kegiatan->kategori()->attach($request->kategori_ids);
+            if ($request->has('kategori_ids')) {
+                $kegiatan->kategori()->attach($request->kategori_ids);
+            }
 
             return response()->json([
                 'success' => true,
@@ -60,6 +63,7 @@ public function store(StoreKegiatanRequest $request)
     public function show(Request $request, $id)
     {
         $kegiatan = Kegiatan::with(['kategori', 'pendaftaran'])
+                    ->withCount('pendaftaran') 
                     ->where('user_id', $request->user()->id)
                     ->find($id);
 
@@ -69,13 +73,12 @@ public function store(StoreKegiatanRequest $request)
 
         return response()->json(['success' => true, 'data' => $kegiatan]);
     }
+
     public function update(UpdateKegiatanRequest $request, $id)
     {
         $kegiatan = Kegiatan::where('user_id', $request->user()->id)->find($id);
 
-        if (!$kegiatan) {
-            return response()->json(['message' => 'Not Found'], 404);
-        }
+        if (!$kegiatan) return response()->json(['message' => 'Not Found'], 404);
 
         if ($request->hasFile('thumbnail')) {
             if ($kegiatan->getRawOriginal('thumbnail')) {
@@ -84,32 +87,25 @@ public function store(StoreKegiatanRequest $request)
             $path = $request->file('thumbnail')->store('images/Kegiatan', 'public');
             $kegiatan->thumbnail = $path;
         }
+
         $kegiatan->update($request->except(['thumbnail', 'kategori_ids']));
 
         if ($request->has('kategori_ids')) {
             $kegiatan->kategori()->sync($request->kategori_ids);
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Kegiatan updated',
-            'data'    => $kegiatan->load('kategori')
-        ]);
+        return response()->json(['success' => true, 'data' => $kegiatan->load('kategori')]);
     }
+
     public function destroy(Request $request, $id)
     {
         $kegiatan = Kegiatan::where('user_id', $request->user()->id)->find($id);
-
-        if (!$kegiatan) {
-            return response()->json(['message' => 'Not Found'], 404);
-        }
+        if (!$kegiatan) return response()->json(['message' => 'Not Found'], 404);
 
         if ($kegiatan->getRawOriginal('thumbnail')) {
             Storage::disk('public')->delete($kegiatan->getRawOriginal('thumbnail'));
         }
-
         $kegiatan->delete();
-
         return response()->json(['success' => true, 'message' => 'Deleted']);
     }
 }
