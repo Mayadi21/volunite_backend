@@ -11,7 +11,7 @@ use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\Admin\KategoriController;
 
 Route::get('/kategori', [KategoriController::class, 'index']);
-
+Route::get('/kegiatan', [KegiatanController::class, 'index']);
 Route::post('/login', [ApiAuthController::class, 'login']);
 Route::post('/auth/google', [GoogleAuthController::class, 'handle']);
 Route::post('/register', [ApiAuthController::class, 'register']);
