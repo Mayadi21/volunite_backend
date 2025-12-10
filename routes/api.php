@@ -5,7 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\ApiAuthController;
 use App\Http\Controllers\KegiatanController;
+use App\Http\Controllers\Admin\KategoriController;
 
+Route::get('/kategori', [KategoriController::class, 'index']);
 
 Route::post('/login', [ApiAuthController::class, 'login']);
 
