@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\JsonResponse;
 
+use function Symfony\Component\Clock\now;
+
 class ApiAuthController extends Controller
 {
     /**
@@ -50,6 +52,45 @@ class ApiAuthController extends Controller
             'user' => $user,
             'token' => $token,
         ], 200);
+    }
+
+    public function register(Request $request)
+    {
+        // 1. Validasi input
+        $validated = $request->validate([
+            'nama'                  => 'required|string|max:50',
+            'email'                 => 'required|string|email|max:120|unique:users,email',
+            'password'              => 'required|string|min:8|confirmed', // butuh field password_confirmation
+            'role'                  => 'required|in:Volunteer,Organizer', // enum di migration
+        ]);
+
+        // 2. Buat user baru
+        $user = User::create([
+            'nama'        => $validated['nama'],
+            'email'       => $validated['email'],
+            'password'    => Hash::make($validated['password']),
+            'role'        => $validated['role'],
+            'path_profil' => null,
+            'email_verified_at' => now(), // biar gak susah ya we
+        ]);
+
+        // 3. Buat token Sanctum
+        $token = $user->createToken('mobile')->plainTextToken;
+
+        // 4. Kembalikan response sesuai model Flutter (AuthResponse)
+        return response()->json([
+            'user' => [
+                'id'                => $user->id,
+                'nama'              => $user->nama,
+                'email'             => $user->email,
+                'role'              => $user->role,
+                'path_profil'       => $user->path_profil,
+                'email_verified_at' => $user->email_verified_at,
+                'created_at'        => $user->created_at,
+                'updated_at'        => $user->updated_at,
+            ],
+            'token' => $token,
+        ], 201);
     }
 
     /**
