@@ -3,18 +3,19 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Laravel\Sanctum\HasApiTokens; // penting untuk token API
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable; // penting untuk token API
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -53,26 +54,36 @@ class User extends Authenticatable
         ];
     }
 
-    public function detailUser(): HasOne{
+    protected function pathProfil(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value ? url('storage/'.$value) : null,
+        );
+    }
+
+    public function detailUser(): HasOne
+    {
         return $this->hasOne(DetailUser::class, 'user_id');
     }
 
-    public function pendaftaran(): HasMany{
+    public function pendaftaran(): HasMany
+    {
         return $this->hasMany(Pendaftaran::class, 'user_id');
     }
 
-    public function rating(): HasMany{
+    public function rating(): HasMany
+    {
         return $this->hasMany(RatingKegiatan::class, 'user_id');
     }
 
-    public function report(): HasMany{
+    public function report(): HasMany
+    {
         return $this->hasMany(ReportKegiatan::class, 'user_id');
     }
 
-    public function pencapaian(): BelongsToMany{
+    public function pencapaian(): BelongsToMany
+    {
         return $this->belongsToMany(Pencapaian::class, 'pencapaian_user', 'pencapaian_id', 'user_id')
-        ->withTimestamps();
+            ->withTimestamps();
     }
-
-    
 }
