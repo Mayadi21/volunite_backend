@@ -21,6 +21,7 @@ class Kegiatan extends Model
         'judul',
         'thumbnail',
         'deskripsi',
+        'link_grup',
         'lokasi',
         'syarat_ketentuan',
         'kuota',

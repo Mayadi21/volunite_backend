@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('judul', 100);
             $table->string('thumbnail', 255)->nullable(); 
-            $table->string('deskripsi', 150)->nullable(); 
+            $table->string('deskripsi', 150)->nullable();
+            $table->string('link_grup', 255)->nullable(); 
             $table->string('lokasi', 150)->nullable(); 
             $table->text('syarat_ketentuan')->nullable(); 
             $table->integer('kuota')->nullable(); 
