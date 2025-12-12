@@ -9,3 +9,7 @@ Route::get('/kegiatan/{id}', [ManageKegiatanController::class, 'show']);
 Route::post('/kegiatan', [ManageKegiatanController::class, 'store']);
 Route::post('/kegiatan/{id}', [ManageKegiatanController::class, 'update']);
 Route::delete('/kegiatan/{id}', [ManageKegiatanController::class, 'destroy']);
+
+Route::get('/kegiatan/{id}/pendaftar', [ManageKegiatanController::class, 'getPendaftar']);
+Route::post('/pendaftar/{id}/update-status', [ManageKegiatanController::class, 'updateStatusPendaftaran']);
+Route::post('/pendaftar/{id}/update-kehadiran', [ManageKegiatanController::class, 'updateKehadiran']);
