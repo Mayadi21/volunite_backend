@@ -8,6 +8,7 @@ class KegiatanController extends Controller
 {
     public function index()
     {
-        return Kegiatan::all();
+        $kegiatan = Kegiatan::with('kategori', 'user')->get(); 
+        return response()->json($kegiatan);
     }
 }
