@@ -20,7 +20,8 @@ return new class extends Migration
             $table->string('link_grup', 255)->nullable(); 
             $table->string('lokasi', 150)->nullable(); 
             $table->text('syarat_ketentuan')->nullable(); 
-            $table->integer('kuota')->nullable(); 
+            $table->integer('kuota')->nullable();
+            $table->enum('metode_penerimaan', ['manual', 'otomatis'])->default('manual'); 
             $table->dateTime('tanggal_mulai')->nullable(); 
             $table->dateTime('tanggal_berakhir')->nullable(); 
             $table->enum('status', ['Waiting', 'Rejected', 'scheduled', 'on progress', 'finished', 'cancelled'])

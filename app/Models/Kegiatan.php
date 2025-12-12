@@ -25,6 +25,7 @@ class Kegiatan extends Model
         'lokasi',
         'syarat_ketentuan',
         'kuota',
+        'metode_penerimaan',
         'tanggal_mulai',
         'tanggal_berakhir',
         'status'

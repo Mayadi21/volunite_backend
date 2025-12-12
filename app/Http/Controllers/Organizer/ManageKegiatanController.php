@@ -43,6 +43,7 @@ class ManageKegiatanController extends Controller
                 'lokasi'           => $request->lokasi,
                 'syarat_ketentuan' => $request->syarat_ketentuan,
                 'kuota'            => $request->kuota,
+                'metode_penerimaan'=> $request->metode_penerimaan,
                 'tanggal_mulai'    => $request->tanggal_mulai,
                 'tanggal_berakhir' => $request->tanggal_berakhir,
                 'status'           => 'Waiting',

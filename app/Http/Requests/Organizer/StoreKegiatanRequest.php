@@ -20,6 +20,7 @@ class StoreKegiatanRequest extends FormRequest
             'lokasi'           => 'required|string|max:150',
             'syarat_ketentuan' => 'required|string',
             'kuota'            => 'required|integer|min:1',
+            'metode_penerimaan' => 'required|in:Manual,Otomatis',
             'tanggal_mulai'    => 'required|date|after:now',
             'tanggal_berakhir' => 'required|date|after:tanggal_mulai',
             'status'           => 'nullable|in:Waiting,scheduled',

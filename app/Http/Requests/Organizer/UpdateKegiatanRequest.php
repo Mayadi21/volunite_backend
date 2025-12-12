@@ -20,6 +20,7 @@ class UpdateKegiatanRequest extends FormRequest
             'lokasi'           => 'sometimes|string|max:150',
             'syarat_ketentuan' => 'sometimes|string',
             'kuota'            => 'sometimes|integer|min:1',
+            'metode_penerimaan' => 'sometimes|in:Manual,Otomatis',
             'tanggal_mulai'    => 'sometimes|date',
             'tanggal_berakhir' => 'sometimes|date|after:tanggal_mulai',
             'status'           => 'nullable|in:Waiting,scheduled,finished,cancelled',
