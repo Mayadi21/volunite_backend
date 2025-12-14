@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Organizer\StoreKegiatanRequest;
 use App\Http\Requests\Organizer\UpdateKegiatanRequest;
 use App\Models\Kegiatan;
+use App\Models\Notifikasi;
 use App\Models\Pendaftaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -135,16 +136,56 @@ class ManageKegiatanController extends Controller
         ]);
     }
 
+    public function updateKehadiran(Request $request, $pendaftaranId)
+    {
+        $request->validate([
+            'status_kehadiran' => 'required|in:Hadir,Tidak Hadir,Belum Dicek',
+        ]);
+
+        $pendaftaran = Pendaftaran::with('kegiatan')->find($pendaftaranId);
+
+        if (! $pendaftaran) {
+            return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        }
+
+        $pendaftaran->status_kehadiran = $request->status_kehadiran;
+
+        if ($request->status_kehadiran == 'Hadir') {
+            $pendaftaran->tanggal_kehadiran = now();
+        } else {
+            $pendaftaran->tanggal_kehadiran = null;
+        }
+
+        $pendaftaran->save();
+
+        if ($request->status_kehadiran != 'Belum Dicek') {
+
+            $judulKegiatan = $pendaftaran->kegiatan->judul; 
+
+            Notifikasi::create([
+                'user_id' => $pendaftaran->user_id,
+                'judul' => 'Laporan Kehadiran',
+                'subjudul' => 'Status kehadiran Anda di "'.$judulKegiatan.'" telah diperbarui menjadi: '.$request->status_kehadiran,
+                'read' => false,
+            ]);
+        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Absensi berhasil diperbarui',
+        ]);
+    }
+
     public function updateStatusPendaftaran(Request $request, $pendaftaranId)
     {
         $request->validate([
             'status' => 'required|in:Diterima,Ditolak',
         ]);
-        // Cari pendaftaran
+
         $pendaftaran = Pendaftaran::find($pendaftaranId);
         if (! $pendaftaran) {
             return response()->json(['message' => 'Data tidak ditemukan'], 404);
         }
+
         $kegiatan = Kegiatan::where('id', $pendaftaran->kegiatan_id)
             ->where('user_id', $request->user()->id)
             ->first();
@@ -164,35 +205,27 @@ class ManageKegiatanController extends Controller
         $pendaftaran->status = $request->status;
         $pendaftaran->save();
 
+        $judulNotif = '';
+        $pesanNotif = '';
+
+        if ($request->status == 'Diterima') {
+            $judulNotif = 'Selamat! Pendaftaran Diterima 🎉';
+            $pesanNotif = 'Anda telah diterima sebagai volunteer di kegiatan "'.$kegiatan->judul.'".';
+        } else {
+            $judulNotif = 'Update Status Pendaftaran';
+            $pesanNotif = 'Maaf, pendaftaran Anda untuk "'.$kegiatan->judul.'" belum dapat diterima.';
+        }
+
+        Notifikasi::create([
+            'user_id' => $pendaftaran->user_id,
+            'judul' => $judulNotif,
+            'subjudul' => $pesanNotif,
+            'read' => false,
+        ]);
+
         return response()->json([
             'success' => true,
             'message' => 'Status berhasil diubah menjadi '.$request->status,
-        ]);
-    }
-
-    public function updateKehadiran(Request $request, $pendaftaranId)
-    {
-        $request->validate([
-            'status_kehadiran' => 'required|in:Hadir,Tidak Hadir,Belum Dicek', 
-        ]);
-
-        $pendaftaran = Pendaftaran::find($pendaftaranId);
-        if (! $pendaftaran) {
-            return response()->json(['message' => 'Data tidak ditemukan'], 404);
-        }
-        $pendaftaran->status_kehadiran = $request->status_kehadiran;
-
-        if ($request->status_kehadiran == 'Hadir') {
-            $pendaftaran->tanggal_kehadiran = now();
-        } else {
-            $pendaftaran->tanggal_kehadiran = null;
-        }
-
-        $pendaftaran->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Absensi berhasil diperbarui menjadi '.$request->status_kehadiran,
         ]);
     }
 }

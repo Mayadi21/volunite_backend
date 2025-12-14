@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\ApiAuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\DetailUserController;
+use App\Http\Controllers\NotifikasiController;
 
 use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\Admin\KategoriController;
@@ -30,7 +31,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // jan diganngu ya (mayyy)
     Route::post('/user/detail', [DetailUserController::class, 'storeOrUpdate']);
     
-
+    Route::get('/notifikasi', [NotifikasiController::class, 'index']);
+    Route::post('/notifikasi/{id}/read', [NotifikasiController::class, 'markAsRead']);
 
     Route::get('/user', function (Request $request) {
         return $request->user();
