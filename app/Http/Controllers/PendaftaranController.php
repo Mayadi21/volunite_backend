@@ -48,7 +48,7 @@ class PendaftaranController extends Controller
             $pendaftaran = Pendaftaran::create([
                 'user_id' => $userId,
                 'kegiatan_id' => $kegiatanId,
-                'status' => 'Diterima',
+                'status' => 'Mengajukan',
                 'status_kehadiran' => 'Belum Dicek',
             ]);
 
