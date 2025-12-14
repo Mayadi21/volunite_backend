@@ -57,7 +57,7 @@ class User extends Authenticatable
     protected function pathProfil(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $value ? url('storage/'.$value) : null,
+            get: fn($value) => $value ? url('storage/' . $value) : null,
         );
     }
 
@@ -85,5 +85,10 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Pencapaian::class, 'pencapaian_user', 'pencapaian_id', 'user_id')
             ->withTimestamps();
+    }
+
+    public function notifikasi()
+    {
+        return $this->hasMany(Notifikasi::class);
     }
 }
