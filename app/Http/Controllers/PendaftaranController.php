@@ -83,12 +83,20 @@ class PendaftaranController extends Controller
             return response()->json(['message' => 'Kegiatan tidak ditemukan.'], 404);
         }
 
-        $sudahDaftar = Pendaftaran::where('user_id', $userId)
+        $pendaftaran = Pendaftaran::where('user_id', $userId)
             ->where('kegiatan_id', $kegiatanId)
-            ->exists();
+            ->first(); // Gunakan first() untuk mendapatkan objek Pendaftaran
 
+        if ($pendaftaran) {
+            // Jika pendaftaran ditemukan, kembalikan statusnya
+            return response()->json([
+                'status_pendaftaran' => $pendaftaran->status // Mengajukan, Diterima, Ditolak
+            ], 200);
+        }
+
+        // Jika pendaftaran tidak ditemukan
         return response()->json([
-            'is_registered' => $sudahDaftar
+            'status_pendaftaran' => 'Belum Mendaftar'
         ], 200);
     }
 }
