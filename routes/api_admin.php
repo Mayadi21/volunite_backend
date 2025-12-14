@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ActivityController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\KategoriController;
+use App\Http\Controllers\Admin\PencapaianController;
 
 Route::get('/dashboard-stats', [DashboardController::class, 'stats']);
 
@@ -26,3 +27,9 @@ Route::get('/kategori', [KategoriController::class, 'index']);
 Route::post('/kategori', [KategoriController::class, 'store']);
 Route::put('/kategori/{id}', [KategoriController::class, 'update']);
 Route::delete('/kategori/{id}', [KategoriController::class, 'destroy']);
+
+Route::get('pencapaian', [PencapaianController::class, 'index']);
+Route::post('pencapaian', [PencapaianController::class, 'store']);
+Route::get('pencapaian/{id}', [PencapaianController::class, 'show']);
+Route::put('pencapaian/{id}', [PencapaianController::class, 'update']);
+Route::delete('pencapaian/{id}', [PencapaianController::class, 'destroy']);
