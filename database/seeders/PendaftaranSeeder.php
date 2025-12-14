@@ -61,31 +61,44 @@ class PendaftaranSeeder extends Seeder
         // ===============================
         foreach ($volunteers as $volunteerId) {
 
-            // Skip alfi & mayadi
             if (in_array($volunteerId, $specialVolunteerIds)) {
                 continue;
             }
 
-            // Acak jumlah kegiatan yang diikuti (1 s.d maxJoinPerUser)
             $joinCount = rand(1, min($maxJoinPerUser, $kegiatans->count()));
-
             $randomKegiatans = $kegiatans->random($joinCount);
 
             foreach ($randomKegiatans as $kegiatan) {
 
-                // Hindari duplicate
                 if (Pendaftaran::where('user_id', $volunteerId)
                     ->where('kegiatan_id', $kegiatan->id)
-                    ->exists()) {
+                    ->exists()
+                ) {
                     continue;
+                }
+
+                // ===============================
+                // LOGIC BARU DI SINI 👇
+                // ===============================
+                $status = 'Mengajukan';
+                $statusKehadiran = 'Belum Dicek';
+                $tanggalKehadiran = null;
+
+                if ($kegiatan->status === 'finished') {
+                    // 40% volunteer diterima & hadir
+                    if (rand(1, 100) <= 40) {
+                        $status = 'Diterima';
+                        $statusKehadiran = 'Hadir';
+                        $tanggalKehadiran = Carbon::parse($kegiatan->tanggal_mulai);
+                    }
                 }
 
                 $pendaftaran = Pendaftaran::create([
                     'user_id' => $volunteerId,
                     'kegiatan_id' => $kegiatan->id,
-                    'status' => 'Mengajukan',
-                    'status_kehadiran' => 'Belum Dicek',
-                    'tanggal_kehadiran' => null,
+                    'status' => $status,
+                    'status_kehadiran' => $statusKehadiran,
+                    'tanggal_kehadiran' => $tanggalKehadiran,
                 ]);
 
                 DetailPendaftaran::create([
@@ -97,6 +110,7 @@ class PendaftaranSeeder extends Seeder
                 ]);
             }
         }
+
 
         $this->command->info('✅ PendaftaranSeeder berhasil dijalankan dengan aturan final.');
     }

@@ -30,14 +30,39 @@ class PencapaianSeeder extends Seeder
             ['nama' => 'Bintang Lapangan', 'deskripsi' => 'Diberikan kepada relawan yang menjadi inspirasi dan pemimpin dalam kegiatan Olahraga komunitas.', 'thumbnail' => 'images/pencapaian/bintang_lapangan.png', 'required_kategori' => 6, 'required_count_kategori' => 25, 'required_exp' => null],
             ['nama' => 'Pecinta Satwa', 'deskripsi' => 'Diberikan kepada relawan yang menunjukkan kasih sayang dan kepedulian dalam kegiatan sukarelawan kategori Hewan.', 'thumbnail' => 'images/pencapaian/pecinta_satwa.png', 'required_kategori' => 7, 'required_count_kategori' => 5, 'required_exp' => null],
             ['nama' => 'Pelindung Margasatwa', 'deskripsi' => 'Diberikan kepada relawan yang secara aktif melindungi dan menyelamatkan satwa serta habitatnya.', 'thumbnail' => 'images/pencapaian/pelindung_margasatwa.png', 'required_kategori' => 7, 'required_count_kategori' => 25, 'required_exp' => null],
-            ['nama' => 'Relawan Pemula', 'deskripsi' => 'Diberikan kepada relawan yang telah menyelesaikan kegiatan sukarelawan pertamanya bersama Volunite.', 'thumbnail' => 'images/pencapaian/relawan_pemula.png', 'required_kategori' => null, 'required_count_kategori' => null, 'required_exp' => 100],
-            ['nama' => 'Relawan Aktif', 'deskripsi' => 'Diberikan kepada relawan yang telah menunjukkan keaktifan dan menyelesaikan 10 kegiatan sukarelawan melalui Volunite.', 'thumbnail' => 'images/pencapaian/relawan_aktif.png', 'required_kategori' => null, 'required_count_kategori' => null, 'required_exp' => 1000],
-            ['nama' => 'Kontributor Setia', 'deskripsi' => 'Diberikan kepada relawan yang secara konsisten berkontribusi dan telah berpartisipasi dalam 25 kegiatan sukarelawan.', 'thumbnail' => 'images/pencapaian/kontibutor_setia.png', 'required_kategori' => null, 'required_count_kategori' => null, 'required_exp' => 2500],
-            ['nama' => 'Master Relawan', 'deskripsi' => 'Diberikan kepada relawan master yang telah mendedikasikan diri secara luar biasa dan menyelesaikan 50 kegiatan pengabdian.', 'thumbnail' => 'images/pencapaian/master_relawan.png', 'required_kategori' => null, 'required_count_kategori' => null, 'required_exp' => 5000]
-            
+            ['nama' => 'Relawan Pemula', 'deskripsi' => 'Diberikan kepada relawan yang telah menyelesaikan kegiatan sukarelawan pertamanya bersama Volunite.', 'thumbnail' => 'images/pencapaian/relawan_pemula.png', 'required_kategori' => null, 'required_count_kategori' => null, 'required_exp' => 3000],
+            ['nama' => 'Relawan Aktif', 'deskripsi' => 'Diberikan kepada relawan yang telah menunjukkan keaktifan dan menyelesaikan 10 kegiatan sukarelawan melalui Volunite.', 'thumbnail' => 'images/pencapaian/relawan_aktif.png', 'required_kategori' => null, 'required_count_kategori' => null, 'required_exp' => 10000],
+            ['nama' => 'Kontributor Setia', 'deskripsi' => 'Diberikan kepada relawan yang secara konsisten berkontribusi dan telah berpartisipasi dalam 25 kegiatan sukarelawan.', 'thumbnail' => 'images/pencapaian/kontibutor_setia.png', 'required_kategori' => null, 'required_count_kategori' => null, 'required_exp' => 15000],
+            ['nama' => 'Master Relawan', 'deskripsi' => 'Diberikan kepada relawan master yang telah mendedikasikan diri secara luar biasa dan menyelesaikan 50 kegiatan pengabdian.', 'thumbnail' => 'images/pencapaian/master_relawan.png', 'required_kategori' => null, 'required_count_kategori' => null, 'required_exp' => 20000,] ,
+                [
+                    'nama' => 'Legenda Relawan',
+                    'deskripsi' => 'Diberikan kepada relawan legendaris yang telah menyelesaikan lebih dari 75 kegiatan sukarelawan dan menjadi inspirasi bagi komunitas.',
+                    'thumbnail' => 'images/pencapaian/legenda_relawan.png',
+                    'required_kategori' => null,
+                    'required_count_kategori' => null,
+                    'required_exp' => 25000
+                ],
+            [
+                'nama' => 'Ikon Pengabdian',
+                'deskripsi' => 'Diberikan kepada relawan luar biasa yang menunjukkan dedikasi jangka panjang dan konsistensi tinggi dalam kegiatan sosial.',
+                'thumbnail' => 'images/pencapaian/ikon_pengabdian.png',
+                'required_kategori' => null,
+                'required_count_kategori' => null,
+                'required_exp' => 32000
+            ],
+            [
+                'nama' => 'Grandmaster Relawan',
+                'deskripsi' => 'Pencapaian tertinggi bagi relawan elit yang telah mencapai tingkat pengabdian luar biasa dan dampak sosial yang luas.',
+                'thumbnail' => 'images/pencapaian/grandmaster_relawan.png',
+                'required_kategori' => null,
+                'required_count_kategori' => null,
+                'required_exp' => 50000
+            ],
+
+
         ];
 
-        foreach($Pencapaians as $pencapaian){
+        foreach ($Pencapaians as $pencapaian) {
             Pencapaian::create($pencapaian);
         }
     }
