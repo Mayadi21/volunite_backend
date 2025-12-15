@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\ApiAuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\DetailUserController;
 use App\Http\Controllers\NotifikasiController;
+use App\Http\Controllers\ProfileController;
 
 use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\Admin\KategoriController;
@@ -21,6 +22,9 @@ Route::post('/register', [ApiAuthController::class, 'register']);
 
 // Route yang mewajibkan Login
 Route::middleware(['auth:sanctum'])->group(function () {
+
+    Route::get('/profile', [ProfileController::class, 'show']);
+    Route::post('/profile', [ProfileController::class, 'update']);
     
     Route::prefix('volunteer')->group(base_path('routes/api_volunteer.php'));
 
