@@ -16,7 +16,7 @@ class StoreKegiatanRequest extends FormRequest
         return [
             'judul'            => 'required|string|max:100',
             'deskripsi'        => 'required|string|max:150',
-            'link_grup' => 'nullable|url|max:255',
+            'link_grup' => 'required|url|max:255',
             'lokasi'           => 'required|string|max:150',
             'syarat_ketentuan' => 'required|string',
             'kuota'            => 'required|integer|min:1',

@@ -16,7 +16,7 @@ class UpdateKegiatanRequest extends FormRequest
         return [
             'judul'            => 'sometimes|string|max:100',
             'deskripsi'        => 'sometimes|string|max:150',
-            'link_grup'        => 'sometimes|url|max:255',
+            'link_grup'        => 'required|url|max:255',
             'lokasi'           => 'sometimes|string|max:150',
             'syarat_ketentuan' => 'sometimes|string',
             'kuota'            => 'sometimes|integer|min:1',

@@ -17,10 +17,12 @@ class ManageKegiatanController extends Controller
     public function index(Request $request)
     {
         $kegiatan = Kegiatan::with('kategori')
-            ->withCount('pendaftaran')
-            ->where('user_id', $request->user()->id)
-            ->latest()
-            ->get();
+                    ->withCount(['pendaftaran' => function ($query) {
+                        $query->where('status', 'Diterima');
+                    }])
+                    ->where('user_id', $request->user()->id)
+                    ->latest()
+                    ->get();
 
         return response()->json([
             'success' => true,
@@ -66,9 +68,11 @@ class ManageKegiatanController extends Controller
     public function show(Request $request, $id)
     {
         $kegiatan = Kegiatan::with(['kategori', 'pendaftaran'])
-            ->withCount('pendaftaran')
-            ->where('user_id', $request->user()->id)
-            ->find($id);
+                    ->withCount(['pendaftaran' => function ($query) {
+                        $query->where('status', 'Diterima');
+                    }])
+                    ->where('user_id', $request->user()->id)
+                    ->find($id);
 
         if (! $kegiatan) {
             return response()->json(['success' => false, 'message' => 'Not Found'], 404);
@@ -208,9 +212,14 @@ class ManageKegiatanController extends Controller
         $judulNotif = '';
         $pesanNotif = '';
 
+
         if ($request->status == 'Diterima') {
             $judulNotif = 'Selamat! Pendaftaran Diterima 🎉';
-            $pesanNotif = 'Anda telah diterima sebagai volunteer di kegiatan "'.$kegiatan->judul.'".';
+
+            
+            $link_WA = $kegiatan->link_grup;
+            $pesanNotif = "Anda diterima di kegiatan \"{$kegiatan->judul}\".\n" .
+                      "Silakan segera bergabung ke Grup WhatsApp untuk koordinasi:\n$link_WA";
         } else {
             $judulNotif = 'Update Status Pendaftaran';
             $pesanNotif = 'Maaf, pendaftaran Anda untuk "'.$kegiatan->judul.'" belum dapat diterima.';
