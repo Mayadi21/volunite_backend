@@ -16,22 +16,27 @@ class DashboardController extends Controller
             'aktif'    => Kegiatan::where('user_id', $userId)->whereIn('status', ['scheduled', 'on progress'])->count(),
             'waiting'  => Kegiatan::where('user_id', $userId)->where('status', 'Waiting')->count(),
             'selesai'  => Kegiatan::where('user_id', $userId)->where('status', 'finished')->count(),
-            'pendaftar'=> Pendaftaran::whereHas('kegiatan', function($q) use ($userId) {
-                            $q->where('user_id', $userId);
-                          })->count(),
+            
+            'pendaftar'=> Pendaftaran::where('status', 'Diterima') 
+                            ->whereHas('kegiatan', function($q) use ($userId) {
+                                $q->where('user_id', $userId);
+                            })->count(),
         ];
 
         $kegiatan = Kegiatan::where('user_id', $userId)
                     ->whereIn('status', ['scheduled', 'on progress', 'Waiting'])
-                    ->withCount('pendaftaran')
+                    ->withCount(['pendaftaran' => function ($query) {
+                        $query->where('status', 'Diterima');
+                    }])
                     ->latest('tanggal_mulai')
                     ->take(5)
                     ->get();
 
         $pelamar = Pendaftaran::with(['user', 'kegiatan'])
-                    ->where('status', 'Mengajukan')
+                    ->where('status', 'Mengajukan') 
                     ->whereHas('kegiatan', function($q) use ($userId) {
-                        $q->where('user_id', $userId);
+                        $q->where('user_id', $userId)
+                          ->whereIn('status', ['Waiting', 'scheduled', 'on progress']); 
                     })
                     ->latest()
                     ->take(5)
