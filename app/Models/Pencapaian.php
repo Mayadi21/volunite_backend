@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Pencapaian extends Model
 {
@@ -22,6 +23,13 @@ class Pencapaian extends Model
         'required_count_kategori',
         'required_exp'
     ];
+
+    protected function thumbnail(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value ? url('storage/' . $value) : null,
+        );
+    }
 
     public function kategori(): BelongsTo{
         return $this->belongsTo(Kategori::class, 'required_kategori');
