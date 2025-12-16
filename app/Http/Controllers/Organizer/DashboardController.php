@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Kegiatan;
 use App\Models\Pendaftaran;
+use App\Models\Notifikasi;
 
 class DashboardController extends Controller
 {
@@ -42,13 +43,18 @@ class DashboardController extends Controller
                     ->take(5)
                     ->get();
 
+        $unreadNotif = Notifikasi::where('user_id', $userId)
+                        ->where('read', false)
+                        ->count();
+
         return response()->json([
             'success' => true,
             'data' => [
                 'user' => $request->user(), 
                 'stats' => $stats,
                 'kegiatan' => $kegiatan,
-                'pelamar_pending' => $pelamar
+                'pelamar_pending' => $pelamar,
+                'unread_notif' => $unreadNotif
             ]
         ]);
     }
