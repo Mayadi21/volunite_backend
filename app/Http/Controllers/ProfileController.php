@@ -84,4 +84,33 @@ class ProfileController extends Controller
 
     return response()->json(['message' => 'Profile berhasil diperbarui']);
 }
+public function changePassword(Request $request)
+{
+    /** @var User $user */
+    $user = Auth::user();
+
+    // 1. Validasi Input Password
+    $validated = $request->validate([
+        'current_password' => 'required|string',
+        'password'         => 'required|string|min:8|confirmed', // 'confirmed' akan memvalidasi 'password' vs 'password_confirmation'
+        'password_confirmation' => 'required|string',
+    ]);
+
+    // 2. Verifikasi Password Lama
+    if (!password_verify($validated['current_password'], $user->password)) {
+        // Mengembalikan error kustom agar lebih mudah ditangkap oleh frontend
+        return response()->json([
+            'message' => 'Kata sandi lama tidak valid.',
+            'errors' => ['current_password' => ['Kata sandi lama salah.']],
+        ], 422); // Unprocessable Entity
+    }
+
+    // 3. Update Password
+    $user->update([
+        'password' => bcrypt($validated['password']),
+    ]);
+
+    return response()->json(['message' => 'Kata sandi berhasil diperbarui']);
+}
+
 }
