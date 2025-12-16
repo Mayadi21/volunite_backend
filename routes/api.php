@@ -25,6 +25,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'show']);
     Route::post('/profile', [ProfileController::class, 'update']);
+    Route::post('/profile/password', [ProfileController::class, 'changePassword']);
     
     Route::prefix('volunteer')->group(base_path('routes/api_volunteer.php'));
 
