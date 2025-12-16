@@ -23,8 +23,8 @@ Route::post('/register', [ApiAuthController::class, 'register']);
 // Route yang mewajibkan Login
 Route::middleware(['auth:sanctum'])->group(function () {
 
-    Route::get('/profile', [ProfileController::class, 'show']);
-    Route::post('/profile', [ProfileController::class, 'update']);
+    Route::get('/profile/me', [ProfileController::class, 'show']);
+    Route::post('/profile/update', [ProfileController::class, 'update']);
     Route::post('/profile/password', [ProfileController::class, 'changePassword']);
     
     Route::prefix('volunteer')->group(base_path('routes/api_volunteer.php'));

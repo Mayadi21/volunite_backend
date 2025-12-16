@@ -2,115 +2,107 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use App\Models\DetailUser; 
 
 class ProfileController extends Controller
 {
-    public function show()
+    // 1. GET DATA PROFILE
+    public function show(Request $request)
     {
-        /** @var User $user */
-        $user = Auth::user();
-        $user->loadMissing('detailUser');
+        $user = $request->user();
+        
+        // Ambil atau buat data detail user jika belum ada
+        $detail = DetailUser::firstOrCreate(['user_id' => $user->id]);
 
         return response()->json([
-            'user' => [
-                'id'          => $user->id,
-                'nama'        => $user->nama,
-                'email'       => $user->email,
-                'role'        => $user->role,
-                'path_profil' => $user->path_profil, // sudah URL
-            ],
-            'detail' => [
-                'tanggal_lahir' => optional($user->detailUser)->tanggal_lahir,
-                'jenis_kelamin' => optional($user->detailUser)->jenis_kelamin,
-                'no_telepon'    => optional($user->detailUser)->no_telepon,
-                'domisili'      => optional($user->detailUser)->domisili,
+            'success' => true,
+            'data' => [
+                'user' => $user,
+                'detail' => $detail
             ]
         ]);
     }
 
+    // 2. UPDATE DATA PROFILE (Multipart Form Data)
     public function update(Request $request)
-{
-    /** @var User $user */
-    $user = Auth::user();
+    {
+        $user = $request->user();
 
-    // 1. Lakukan Validasi
-    $validated = $request->validate([
-        'nama'          => 'required|string|max:255',
-        'jenis_kelamin' => 'nullable|in:Laki-Laki,Perempuan,Tidak Ingin Memberi Tahu',
-        'tanggal_lahir' => 'nullable|date_format:Y-m-d',
-        'no_telepon'    => 'nullable|string|max:20',
-        'domisili'      => 'nullable|string|max:255',
-        'foto'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-    ]);
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'jenis_kelamin' => 'nullable|string',
+            'tanggal_lahir' => 'nullable|date',
+            'no_telepon' => 'nullable|string|max:15',
+            'domisili' => 'nullable|string|max:255',
+        ]);
 
-    // 2. Data untuk DetailUser (Hanya field yang dimiliki DetailUser)
-    $detailData = array_intersect_key($validated, [
-        'jenis_kelamin' => null,
-        'tanggal_lahir' => null,
-        'no_telepon'    => null,
-        'domisili'      => null,
-    ]);
+        DB::beginTransaction();
+        try {
+            // A. Update User (Nama & Foto)
+            $user->nama = $request->nama;
 
-    // 3. Update Tabel Users (Hanya Nama)
-    $user->update([
-        'nama' => $validated['nama'],
-    ]);
+            if ($request->hasFile('foto')) {
+                // Hapus foto lama jika ada
+                if ($user->path_profil && Storage::exists('public/' . $user->path_profil)) {
+                    Storage::delete('public/' . $user->path_profil);
+                }
+                
+                // Simpan foto baru
+                $path = $request->file('foto')->store('images/profiles', 'public');
+                $user->path_profil = $path;
+            }
+            $user->save();
 
-    // 4. Update atau Create DetailUser
-    if (!empty($detailData)) { // Hanya proses jika ada data detail yang dikirim/berhasil divalidasi
-        if ($user->detailUser) {
-            $user->detailUser->update($detailData); // Jika sudah ada, update
-        } else {
-            // Jika belum ada, buat record baru dengan data detail yang tersedia.
-            // Pastikan user_id akan terisi otomatis melalui relasi.
-            $user->detailUser()->create($detailData); 
+            // B. Update Detail User
+            $detail = DetailUser::firstOrCreate(['user_id' => $user->id]);
+            $detail->update([
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'no_telepon' => $request->no_telepon,
+                'domisili' => $request->domisili,
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Profil berhasil diperbarui',
+                'data' => [
+                    'user' => $user->refresh(),
+                    'detail' => $detail
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()], 500);
         }
     }
-    // Jika $detailData kosong (hanya update nama), maka blok ini dilewati, dan tidak ada create yang gagal.
 
-    // 5. Penanganan Foto (Sudah benar)
-    if ($request->hasFile('foto')) {
-        $oldPath = $user->attributes['path_profil'] ?? null;
-        if ($oldPath && Storage::disk('public')->exists($oldPath)) {
-            Storage::disk('public')->delete($oldPath);
+    // 3. GANTI PASSWORD
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        $user = $request->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'message' => 'Kata sandi lama salah.',
+                'errors' => ['current_password' => ['Kata sandi lama tidak sesuai.']]
+            ], 422);
         }
-        $path = $request->file('foto')->store('profiles', 'public');
-        $user->update(['path_profil' => $path]);
+
+        $user->update(['password' => Hash::make($request->password)]);
+
+        return response()->json(['success' => true, 'message' => 'Kata sandi berhasil diubah.']);
     }
-
-    return response()->json(['message' => 'Profile berhasil diperbarui']);
-}
-public function changePassword(Request $request)
-{
-    /** @var User $user */
-    $user = Auth::user();
-
-    // 1. Validasi Input Password
-    $validated = $request->validate([
-        'current_password' => 'required|string',
-        'password'         => 'required|string|min:8|confirmed', // 'confirmed' akan memvalidasi 'password' vs 'password_confirmation'
-        'password_confirmation' => 'required|string',
-    ]);
-
-    // 2. Verifikasi Password Lama
-    if (!password_verify($validated['current_password'], $user->password)) {
-        // Mengembalikan error kustom agar lebih mudah ditangkap oleh frontend
-        return response()->json([
-            'message' => 'Kata sandi lama tidak valid.',
-            'errors' => ['current_password' => ['Kata sandi lama salah.']],
-        ], 422); // Unprocessable Entity
-    }
-
-    // 3. Update Password
-    $user->update([
-        'password' => bcrypt($validated['password']),
-    ]);
-
-    return response()->json(['message' => 'Kata sandi berhasil diperbarui']);
-}
-
 }

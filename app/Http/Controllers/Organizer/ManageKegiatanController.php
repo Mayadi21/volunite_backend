@@ -17,12 +17,12 @@ class ManageKegiatanController extends Controller
     public function index(Request $request)
     {
         $kegiatan = Kegiatan::with('kategori')
-                    ->withCount(['pendaftaran' => function ($query) {
-                        $query->where('status', 'Diterima');
-                    }])
-                    ->where('user_id', $request->user()->id)
-                    ->latest()
-                    ->get();
+            ->withCount(['pendaftaran' => function ($query) {
+                $query->where('status', 'Diterima');
+            }])
+            ->where('user_id', $request->user()->id)
+            ->latest()
+            ->get();
 
         return response()->json([
             'success' => true,
@@ -68,11 +68,11 @@ class ManageKegiatanController extends Controller
     public function show(Request $request, $id)
     {
         $kegiatan = Kegiatan::with(['kategori', 'pendaftaran'])
-                    ->withCount(['pendaftaran' => function ($query) {
-                        $query->where('status', 'Diterima');
-                    }])
-                    ->where('user_id', $request->user()->id)
-                    ->find($id);
+            ->withCount(['pendaftaran' => function ($query) {
+                $query->where('status', 'Diterima');
+            }])
+            ->where('user_id', $request->user()->id)
+            ->find($id);
 
         if (! $kegiatan) {
             return response()->json(['success' => false, 'message' => 'Not Found'], 404);
@@ -164,7 +164,7 @@ class ManageKegiatanController extends Controller
 
         if ($request->status_kehadiran != 'Belum Dicek') {
 
-            $judulKegiatan = $pendaftaran->kegiatan->judul; 
+            $judulKegiatan = $pendaftaran->kegiatan->judul;
 
             Notifikasi::create([
                 'user_id' => $pendaftaran->user_id,
@@ -173,6 +173,7 @@ class ManageKegiatanController extends Controller
                 'read' => false,
             ]);
         }
+
         return response()->json([
             'success' => true,
             'message' => 'Absensi berhasil diperbarui',
@@ -182,59 +183,62 @@ class ManageKegiatanController extends Controller
     public function updateStatusPendaftaran(Request $request, $pendaftaranId)
     {
         $request->validate([
-            'status' => 'required|in:Diterima,Ditolak',
+            'status' => 'required|in:Diterima,Ditolak'
         ]);
 
         $pendaftaran = Pendaftaran::find($pendaftaranId);
-        if (! $pendaftaran) {
-            return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        if (!$pendaftaran) {
+            return response()->json(['success' => false, 'message' => 'Data tidak ditemukan'], 404);
         }
 
         $kegiatan = Kegiatan::where('id', $pendaftaran->kegiatan_id)
-            ->where('user_id', $request->user()->id)
-            ->first();
+                    ->where('user_id', $request->user()->id)
+                    ->first();
 
-        if (! $kegiatan) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if (!$kegiatan) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $statusKegiatan = strtolower($kegiatan->status);
+        if (in_array($statusKegiatan, ['finished', 'cancelled', 'rejected'])) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Kegiatan sudah berakhir/batal. Tidak dapat mengubah status pelamar.'
+            ], 400);
         }
 
         if ($request->status == 'Diterima') {
-            $acceptedCount = Pendaftaran::where('kegiatan_id', $kegiatan->id)
-                ->where('status', 'Diterima')->count();
-            if ($acceptedCount >= $kegiatan->kuota) {
-                return response()->json(['message' => 'Kuota sudah penuh!'], 400);
+            $totalDiterima = Pendaftaran::where('kegiatan_id', $kegiatan->id)
+                            ->where('status', 'Diterima')
+                            ->count();
+            
+            if ($totalDiterima >= $kegiatan->kuota) {
+                return response()->json(['success' => false, 'message' => 'Kuota kegiatan sudah penuh'], 400);
             }
         }
 
         $pendaftaran->status = $request->status;
         $pendaftaran->save();
 
-        $judulNotif = '';
-        $pesanNotif = '';
+        $judulNotif = ($request->status == 'Diterima') ? 'Selamat! Pendaftaran Diterima 🎉' : 'Update Status Pendaftaran';
+        $pesanNotif = ($request->status == 'Diterima') 
+            ? "Anda diterima di kegiatan \"{$kegiatan->judul}\". Silakan cek detail kegiatan." 
+            : "Maaf, pendaftaran Anda untuk \"{$kegiatan->judul}\" belum dapat diterima.";
 
-
-        if ($request->status == 'Diterima') {
-            $judulNotif = 'Selamat! Pendaftaran Diterima 🎉';
-
-            
-            $link_WA = $kegiatan->link_grup;
-            $pesanNotif = "Anda diterima di kegiatan \"{$kegiatan->judul}\".\n" .
-                      "Silakan segera bergabung ke Grup WhatsApp untuk koordinasi:\n$link_WA";
-        } else {
-            $judulNotif = 'Update Status Pendaftaran';
-            $pesanNotif = 'Maaf, pendaftaran Anda untuk "'.$kegiatan->judul.'" belum dapat diterima.';
+        if ($request->status == 'Diterima' && $kegiatan->link_grup) {
+            $pesanNotif .= "\nLink Grup: " . $kegiatan->link_grup;
         }
 
         Notifikasi::create([
-            'user_id' => $pendaftaran->user_id,
-            'judul' => $judulNotif,
+            'user_id'  => $pendaftaran->user_id,
+            'judul'    => $judulNotif,
             'subjudul' => $pesanNotif,
-            'read' => false,
+            'read'     => false
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Status berhasil diubah menjadi '.$request->status,
+            'message' => 'Status berhasil diubah menjadi ' . $request->status
         ]);
     }
 }

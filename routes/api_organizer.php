@@ -4,8 +4,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Organizer\ManageKegiatanController;
 use App\Http\Controllers\Organizer\DashboardController;
+use App\Http\Controllers\Organizer\ProfileController;
 
 Route::get('/dashboard', [DashboardController::class, 'index']);
+
+Route::get('/profile-stats', [ProfileController::class, 'index']);
 
 Route::get('/kegiatan', [ManageKegiatanController::class, 'index']);
 Route::get('/kegiatan/{id}', [ManageKegiatanController::class, 'show']);
