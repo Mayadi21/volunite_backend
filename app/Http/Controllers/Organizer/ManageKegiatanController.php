@@ -121,6 +121,41 @@ class ManageKegiatanController extends Controller
         return response()->json(['success' => true, 'message' => 'Deleted']);
     }
 
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:finished,cancelled' 
+        ]);
+
+        $newStatus = $request->status;
+
+        $kegiatan = Kegiatan::where('id', $id)
+                            ->where('user_id', $request->user()->id)
+                            ->first();
+
+        if (!$kegiatan) {
+            return response()->json(['success' => false, 'message' => 'Kegiatan tidak ditemukan'], 404);
+        }
+
+        if (in_array(strtolower($kegiatan->status), ['finished', 'cancelled', 'rejected'])) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Status kegiatan sudah final dan tidak dapat diubah.'
+            ], 400);
+        }
+
+        $kegiatan->status = $newStatus;
+        $kegiatan->save();
+
+        $msg = ($newStatus == 'finished') ? 'Kegiatan berhasil diselesaikan.' : 'Kegiatan berhasil dibatalkan.';
+
+        return response()->json([
+            'success' => true, 
+            'message' => $msg,
+            'data' => $kegiatan
+        ]);
+    }
+
     public function getPendaftar($kegiatanId)
     {
         $kegiatan = Kegiatan::where('user_id', request()->user()->id)->find($kegiatanId);
@@ -139,6 +174,7 @@ class ManageKegiatanController extends Controller
             'data' => $pendaftar,
         ]);
     }
+
 
     public function updateKehadiran(Request $request, $pendaftaranId)
     {
@@ -208,12 +244,16 @@ class ManageKegiatanController extends Controller
         }
 
         if ($request->status == 'Diterima') {
-            $totalDiterima = Pendaftaran::where('kegiatan_id', $kegiatan->id)
-                            ->where('status', 'Diterima')
-                            ->count();
             
+            $totalDiterima = Pendaftaran::where('kegiatan_id', $kegiatan->id)
+                                        ->where('status', 'Diterima')
+                                        ->count();
+
             if ($totalDiterima >= $kegiatan->kuota) {
-                return response()->json(['success' => false, 'message' => 'Kuota kegiatan sudah penuh'], 400);
+                return response()->json([
+                    'success' => false, 
+                    'message' => 'Gagal menerima! Kuota kegiatan sudah penuh.'
+                ], 400);
             }
         }
 
