@@ -91,7 +91,7 @@ class PencapaianSeeder extends Seeder
             [
                 'nama' => 'Maestro Karya', 
                 'deskripsi' => 'Selesaikan 15 kegiatan sukarelawan dengan kategori Seni.', 
-                'thumbnail' => 'images/pencapaian/maesto_karya.png', 
+                'thumbnail' => 'images/pencapaian/maestro_karya.png', 
                 'required_kategori' => 5, 
                 'required_count_kategori' => 15, 
                 'required_exp' => null
