@@ -87,6 +87,14 @@ class KategoriController extends Controller
         ]);
     }
 
+    public function simple()
+    {
+        return response()->json(
+            Kategori::select('id', 'nama_kategori')->get()
+        );
+    }
+
+
 
 
     // DELETE /admin/kategori/{id}

@@ -33,3 +33,5 @@ Route::post('pencapaian', [PencapaianController::class, 'store']);
 Route::get('pencapaian/{id}', [PencapaianController::class, 'show']);
 Route::put('pencapaian/{id}', [PencapaianController::class, 'update']);
 Route::delete('pencapaian/{id}', [PencapaianController::class, 'destroy']);
+Route::get('/kategori/simple', [KategoriController::class, 'simple']);
+
