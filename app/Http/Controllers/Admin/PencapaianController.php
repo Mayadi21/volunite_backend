@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
 use App\Models\Pencapaian;
 use Illuminate\Http\Request;
@@ -14,14 +15,14 @@ class PencapaianController extends Controller
     private function formatPencapaian($pencapaian)
     {
         // Kita inject property 'thumbnail_url' secara manual ke object ini
-        $pencapaian->thumbnail_url = $pencapaian->thumbnail 
-            ? asset('storage/' . $pencapaian->thumbnail) 
+        $pencapaian->thumbnail_url = $pencapaian->thumbnail
+            ? asset('storage/' . $pencapaian->thumbnail)
             : null;
-        
+
         return $pencapaian;
     }
 
-public function index()
+    public function index()
     {
         // Ubah get() menjadi paginate(10) artinya ambil 10 data per request
         $paginator = Pencapaian::orderBy('created_at', 'desc')->paginate(5);
@@ -41,7 +42,11 @@ public function index()
             'nama' => 'required|string|max:50|unique:pencapaian',
             'deskripsi' => 'nullable|string',
             'thumbnail' => 'nullable|image|max:2048',
+            'required_exp' => 'nullable|integer|min:0',
+            'required_count_kategori' => 'nullable|integer|min:0',
+            'required_kategori' => 'nullable|exists:kategori,id',
         ]);
+
 
         if ($validator->fails()) return response()->json($validator->errors(), 422);
 
@@ -53,19 +58,21 @@ public function index()
         $pencapaian = Pencapaian::create([
             'nama' => $request->nama,
             'deskripsi' => $request->deskripsi,
-            'thumbnail' => $path, // Simpan path saja di DB
-            'required_kategori' => $request->required_kategori,
+            'thumbnail' => $path,
             'required_exp' => $request->required_exp,
+            'required_count_kategori' => $request->required_count_kategori,
+            'required_kategori' => $request->required_kategori,
         ]);
+
 
         // Format dulu sebelum dikirim balik ke Flutter
         return response()->json([
-            'message' => 'Berhasil dibuat', 
+            'message' => 'Berhasil dibuat',
             'data' => $this->formatPencapaian($pencapaian)
         ], 201);
     }
 
-public function update(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $pencapaian = Pencapaian::find($id);
         if (!$pencapaian) return response()->json(['message' => 'Not found'], 404);
@@ -73,13 +80,17 @@ public function update(Request $request, $id)
         $validator = Validator::make($request->all(), [
             // PERBAIKAN: Ignore ID saat ini agar tidak error "Nama sudah ada"
             'nama' => [
-                'required', 
-                'string', 
-                'max:50', 
+                'required',
+                'string',
+                'max:50',
                 Rule::unique('pencapaian')->ignore($pencapaian->id)
             ],
             'deskripsi' => 'nullable|string',
-            'thumbnail' => 'nullable|image|max:2048', 
+            'thumbnail' => 'nullable|image|max:2048',
+            'required_exp' => 'nullable|integer|min:0',
+            'required_count_kategori' => 'nullable|integer|min:0',
+            'required_kategori' => 'nullable|exists:kategori,id',
+
         ]);
 
         if ($validator->fails()) {
@@ -99,14 +110,16 @@ public function update(Request $request, $id)
             'nama' => $request->nama,
             'deskripsi' => $request->deskripsi,
             'thumbnail' => $path,
-            // Gunakan null coalescing operator (??) jika data tidak dikirim
             'required_exp' => $request->required_exp ?? $pencapaian->required_exp,
+            'required_count_kategori' => $request->required_count_kategori ?? $pencapaian->required_count_kategori,
+            'required_kategori' => $request->required_kategori ?? $pencapaian->required_kategori,
         ]);
 
+
         return response()->json([
-            'message' => 'Berhasil diupdate', 
+            'message' => 'Berhasil diupdate',
             // Pastikan formatPencapaian ada atau pakai manual seperti ini:
-            'data' => $pencapaian 
+            'data' => $pencapaian
         ]);
     }
 
