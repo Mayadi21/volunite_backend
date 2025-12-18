@@ -123,7 +123,7 @@ class PencapaianSeeder extends Seeder
             [
                 'nama' => 'Pelindung Margasatwa', 
                 'deskripsi' => 'Selesaikan 15 kegiatan sukarelawan dengan kategori Hewan.', 
-                'thumbnail' => 'images/pencapaian/pelindung_margasatwa.png', 
+                'thumbnail' => 'images/pencapaian/penjaga_margasatwa.png', 
                 'required_kategori' => 7, 
                 'required_count_kategori' => 15, 
                 'required_exp' => null
@@ -147,7 +147,7 @@ class PencapaianSeeder extends Seeder
             [
                 'nama' => 'Kontributor Setia', 
                 'deskripsi' => 'Selesaikan total 10 kegiatan sukarelawan.', 
-                'thumbnail' => 'images/pencapaian/kontibutor_setia.png', 
+                'thumbnail' => 'images/pencapaian/kontributor_setia.png', 
                 'required_kategori' => null, 
                 'required_count_kategori' => null, 
                 'required_exp' => 10000
