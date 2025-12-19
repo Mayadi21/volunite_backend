@@ -1,18 +1,3 @@
-Secara **teknis**, langkah-langkah yang kamu buat sudah cukup untuk membuat orang lain (atau kamu di masa depan) bisa menjalankan servernya.
-
-Namun, untuk sebuah **README repository** (terutama di GitHub/GitLab), ada beberapa hal penting yang sebaiknya ditambahkan agar terlihat lebih profesional dan memudahkan developer lain.
-
-Berikut adalah beberapa hal yang **sangat disarankan** untuk ditambahkan:
-
-1. **Judul & Deskripsi Singkat:** Apa ini? (Backend API untuk Aplikasi Volunite).
-2. **Syarat Sistem (Prerequisites):** Versi PHP berapa? Butuh Composer?
-3. **Akun Default (Penting):** Karena kamu menggunakan `--seed`, biasanya ada akun admin atau user dummy yang dibuat. Beritahu email dan password bawaannya agar orang bisa langsung login saat testing.
-4. **Dokumentasi API:** Link ke Postman Collection atau Swagger (jika ada).
-
-Berikut adalah **template revisi** yang lebih lengkap berdasarkan teks kamu tadi:
-
----
-
 # Volunite Backend API
 
 Repository ini berisi source code backend (REST API) untuk aplikasi mobile **Volunite**, dibangun menggunakan Laravel.
